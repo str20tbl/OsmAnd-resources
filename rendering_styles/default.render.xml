@@ -141,9 +141,10 @@
 	<renderingProperty attr="hideMilitaryAreas" name="Hide military areas" description="Hide military areas"
 		type="boolean" possibleValues="" category="hide"/>
 
-	<renderingProperty attr="alpineHiking" name="Alpine hiking view" description="Render paths according to SAC scale"
-		type="boolean" possibleValues="" category="routes"/>
-
+	<renderingProperty attr="alpineHiking" name="Alpine hiking paths" description="Render paths according to SAC scale" 
+		type="boolean" possibleValues="" category="other"/>
+	<renderingProperty attr="alpineHikingScaleScheme" name="Alpine hiking path scheme" description="Render paths according to SAC/CAI scale"
+		type="string" possibleValues="sacScale,caiScale" defaultValueDescription="disabled" category="other"/>
 	<renderingProperty attr="roadStyle" name="Road style" description="Road style"
 		type="string" possibleValues="germanRoadAtlas,americanRoadAtlas,highContrastRoads,boldOutline" defaultValueDescription="default"/>
 
@@ -1181,6 +1182,11 @@
 	<renderingConstant name="sacScaleColorT4" value="#6000ff"/>
 	<renderingConstant name="sacScaleColorT5" value="#6000ff"/>
 	<renderingConstant name="sacScaleColorT6" value="#6000ff"/>
+
+	<renderingAttribute name="caiScaleColor">
+		<case attrColorValue="#e23cad"/>
+	</renderingAttribute>
+
 	<renderingAttribute name="bridlewayColor">
 		<case attrColorValue="#339900">
 			<apply_if nightMode="true" attrColorValue="#339900"/>
@@ -1936,7 +1942,7 @@
 		<case tag="highway" value="living_street" attrColorValue="#C1B9D1" attrStringValue="highway_class_street"/>
 		<case tag="highway" value="service" attrColorValue="#E3DAF6" attrStringValue="highway_class_service"/>
 		<case tag="highway" value="pedestrian" attrColorValue="$footwayColor" attrStringValue="highway_class_footway"/>
-		<case tag="highway" value="road" attrStringValue="highway_class_undefined"/>
+		<case tag="highway" value="road" attrColorValue="$roadRoadColor" attrStringValue="highway_class_undefined"/>
 		<case tag="highway" value="footway"  attrColorValue="$footwayColor" attrStringValue="highway_class_footway"/>
 		<case tag="highway" value="bridleway" attrColorValue="$bridlewayColor" attrStringValue="highway_class_bridleway"/>
 		<case tag="highway" value="steps" attrColorValue="$footwayColor" attrStringValue="highway_class_steps"/>
@@ -1958,6 +1964,7 @@
 
 		<case additional="surface=asphalt" attrColorValue="$surfaceAsphaltColor" attrStringValue="surface_asphalt"/>
 		<case additional="surface=paved" attrColorValue="$surfacePavedColor" attrStringValue="surface_paved"/>
+		<case additional="surface=chipseal" attrColorValue="$surfacePavedColor" attrStringValue="surface_chipseal"/>
 		<case additional="surface=concrete" attrColorValue="$surfaceConcreteColor" attrStringValue="surface_concrete"/>
 		<case additional="surface=sett" attrColorValue="$surfaceSettColor" attrStringValue="surface_sett"/>
 		<case additional="surface=cobblestone" attrColorValue="$surfaceCobblestoneColor" attrStringValue="surface_cobblestone"/>
@@ -2832,9 +2839,14 @@
 						<case value="block"/>
 						<case value="jersey_barrier"/>
 						<case value="debris"/>
+						<case value="bar"/>
 						<case value="log"/>
 						<case value="bollard"/>
 						<case value="bus_trap"/>
+						<case value="planter"/>
+						<case value="spikes"/>
+						<case value="wedge"/>
+						<case value="sump_buster"/>
 						<case value="cattle_grid"/>
 						<case value="cycle_barrier"/>
 						<case value="height_restrictor"/>
@@ -2950,6 +2962,7 @@
 					<case tag="area:highway" value="footway"/>
 					<case tag="area:highway" value="cycleway"/>
 					<case tag="area:highway" value="track"/>
+					<case tag="man_made" value="bridge"/>
 					<case tag="man_made" value="pier"/>
 					<case tag="waterway" value="dam"/>
 					<case tag="waterway" value="weir"/>
@@ -3089,8 +3102,8 @@
 				<case tag="leisure" value="park"/>
 				<case tag="leisure" value="bird_hide" ignorePolygonAsPointArea="true"/>
 				<case tag="landuse" value="residential" order="4"/>
-				<case tag="historic" value="quarry" order="4"/>
-				<case tag="landuse" value="quarry" order="4"/>
+				<case tag="historic" value="quarry" order="6"/>
+				<case tag="landuse" value="quarry" order="6"/>
 				<switch order="5">
 					<case tag="natural" value="bay"/>
 					<case tag="natural" value="water"/>
@@ -3572,7 +3585,6 @@
 						<apply_if baseAppMode="car" layer="-1" order="-1"/>
 					</case>
 					<case tag="amenity" value="bench"/>
-					<case tag="man_made" value="bridge"/>
 					<case tag="man_made" value="snow_fence"/>
 					<case tag="man_made" value="dyke" order="10"/>
 					<case tag="man_made" value="reinforced_slope"/>
@@ -4219,13 +4231,13 @@
 						<case minzoom="16" tag="area:highway" value="cycleway" textWrapWidth="25" textOrder="189"/>
 						<case tag="cycleway" value="lane" textOrder="197"/>
 						<case tag="cycleway" value="track" textOrder="197"/>
-                        <case tag="cycleway" value="shared_lane" textOrder="197"/>
+						<case tag="cycleway" value="shared_lane" textOrder="197"/>
 						<case tag="cycleway" value="opposite_lane" textOrder="197"/>
 						<case tag="cycleway" value="share_busway" textOrder="197"/>
 						<case tag="cycleway:both" value="lane" textOrder="197"/>
 						<case tag="cycleway:both" value="track" textOrder="197"/>
 						<case tag="cycleway:both" value="shared_lane" textOrder="197"/>
-                        <case tag="cycleway:both" value="share_busway" textOrder="197"/>
+						<case tag="cycleway:both" value="share_busway" textOrder="197"/>
 						<case tag="cycleway" value="opposite" textOrder="197"/>
 						<case tag="highway" value="steps" textOrder="194"/>
 						<case tag="highway" value="raceway" textOrder="192"/>
@@ -4763,7 +4775,6 @@
 					<case minzoom="$wadiStreamTextMinZoom" tag="waterway" value="wadi" textOnPath="true" textOrder="213" nameTag=""/>
 					<case minzoom="11" tag="waterway" value="river" textOnPath="true" textMinDistance="80" textOrder="184" nameTag=""/>
 					<case minzoom="13" tag="waterway" value="canal" textOnPath="true" textMinDistance="80" textOrder="185" nameTag=""/>
-					<case minzoom="14" tag="lock" value="yes" textOnPath="true" textMinDistance="80" textOrder="184" nameTag="lock_name" nameTag2="lock_ref"/>
 					<case hidePOILabels="false" minzoom="17" tag="waterway" value="dock" textDy="7" textOrder="209" nameTag=""/>
 					<case minzoom="15" tag="waterway" value="ditch" textOnPath="true" textOrder="210" nameTag=""/>
 					<case minzoom="15" tag="waterway" value="drain" textOnPath="true" textOrder="211" nameTag=""/>
@@ -4791,6 +4802,18 @@
 					<case minzoom="17" tag="man_made" value="groyne" textWrapWidth="20" textOnPath="true" textOrder="255" nameTag=""/>
 					<case minzoom="17" tag="landuse" value="aquaculture" textOrder="239" nameTag=""/>
 					<apply_if engine_v1="false" textDy="0"/>
+				</switch>
+				<switch>
+					<case minzoom="16" tag="lock" value="yes" nameTag="osmand_lock_stub" textColor="#00ff0000" textSize="11" textShield="blue_round_shield" icon="lock"/>
+					<switch minzoom="16" tag="lock" value="yes">
+						<case engine_v1="false" nameTag="lock_name" nameTag2="lock_ref" textShield="blue_round_shield" icon="lock" textDy="25"/>
+						<case engine_v1="false" nameTag="" textShield="blue_round_shield" icon="lock" textDy="25"/>
+						<case nameTag="" nameTag2="lock_ref"/>
+						<case nameTag="lock_name"/>
+						<apply textColor="$waterTextColor" textHaloRadius="$waterTextHaloRadiusDay" textHaloColor="$waterTextHaloColor" textSize="12" textItalic="true" textOnPath="true" textMinDistance="80"/>
+					</switch>
+					<apply textOrder="184"/>
+					<apply_if nightMode="true" shield="blue_round_night_shield"/>
 				</switch>
 				<switch minzoom="17" textColor="#2579D0" textHaloRadius="$waterTextHaloRadiusDay" textHaloColor="$defaultColor" textSize="12" textItalic="true">
 					<case tag="ford" value="yes" textDy="7" nameTag="" nameTag2="depth" textOrder="208"/>
@@ -5431,6 +5454,7 @@
 				<case minzoom="17" tag="amenity" value="community_centre"/>
 				<case minzoom="17" tag="amenity" value="social_centre"/>
 				<case minzoom="17" tag="amenity" value="library"/>
+				<case minzoom="17" tag="amenity" value="toy_library"/>
 				<case minzoom="17" tag="amenity" value="conference_centre"/>
 				<case minzoom="17" tag="amenity" value="research_institute"/>
 
@@ -5600,6 +5624,8 @@
 					<case tag="barrier" value="sally_port"/>
 					<case tag="barrier" value="block"/>
 					<case tag="barrier" value="debris"/>
+					<case tag="barrier" value="bar"/>
+					<case tag="barrier" value="coupure"/>
 					<case tag="barrier" value="log"/>
 					<case tag="barrier" value="jersey_barrier"/>
 					<case tag="barrier" value="horse_stile"/>
@@ -5607,11 +5633,19 @@
 					<case tag="barrier" value="cycle_barrier"/>
 					<case tag="barrier" value="height_restrictor"/>
 					<case tag="barrier" value="bus_trap"/>
+					<case tag="barrier" value="planter"/>
+					<case tag="barrier" value="spikes"/>
+					<case tag="barrier" value="wicket_gate"/>
+					<case tag="barrier" value="wedge"/>
+					<case tag="barrier" value="sump_buster"/>
 					<case tag="barrier" value="bump_gate"/>
 					<case tag="barrier" value="cattle_grid"/>
 					<case tag="barrier" value="toll_booth"/>
 					<case tag="barrier" value="bollard"/>
 					<case tag="barrier" value="border_control"/>
+					<case tag="barrier" value="barrier_board"/>
+					<case tag="barrier" value="tyres"/>
+					<case tag="barrier" value="tank_trap"/>
 					<case tag="barrier" value="motorcycle_barrier"/>
 				</switch>
 				<apply_if engine_v1="true" textDy="5"/>
@@ -5643,8 +5677,8 @@
 				</switch>
 				<switch minzoom="17">
 					<case tag="building:part" value="" nameTag=""/>
-					<apply_if maxzoom="17" textSize="12" textMinDistance="40" intersectionMargin="20"/>
-					<apply_if minzoom="18" textSize="14"/>
+					<apply_if maxzoom="17" textSize="10" textMinDistance="40" intersectionMargin="20"/>
+					<apply_if minzoom="18" textSize="12"/>
 					<apply textColor="$buildingTextColor" textHaloColor="$buildingTextHaloColor" textWrapWidth="20" textOrder="137"/>
 				</switch>
 				<switch>
@@ -5990,7 +6024,7 @@
 						<case minzoom="17" tag="leisure" value="sauna" textOrder="167"/>
 						<case minzoom="17" tag="amenity" value="public_bath" textOrder="167"/>
 						<case minzoom="18" tag="leisure" value="tanning_salon"/>
-						<case minzoom="16" tag="leisure" value="sports_centre" textOrder="166"/>
+						<case minzoom="16" tag="leisure" value="sports_centre" textOrder="134"/>
 						<case minzoom="17" tag="leisure" value="fitness_centre" textOrder="166"/>
 						<case minzoom="16" tag="leisure" value="sports_hall" textOrder="167"/>
 						<case minzoom="16" tag="leisure" value="ice_rink"/>
@@ -6208,19 +6242,28 @@
 				<switch moreDetailed="true" minzoom="17" iconOrder="138">
 					<case tag="barrier" value="block" icon="barrier_block" shield="barrier_block_shield"/>
 					<case tag="barrier" value="debris" icon="barrier_colored_debris" shield="barrier_debris_shield"/>
+					<case tag="barrier" value="bar" icon="barrier_bar" shield="barrier_bar_shield"/>
+					<case tag="barrier" value="coupure" icon="barrier_coupure" shield="barrier_coupure_shield"/>
 					<case tag="barrier" value="log" icon="barrier_colored_log" shield="barrier_log_shield"/>
 					<case tag="barrier" value="jersey_barrier" icon="barrier_colored_jersey_barrier" shield="barrier_jersey_barrier_shield"/>
 					<case tag="barrier" value="bollard" icon="barrier_bollard" shield="barrier_bollard_shield"/>
 					<case tag="barrier" value="horse_stile" icon="barrier_colored_horse_stile" shield="barrier_horse_stile_shield"/>
 					<case tag="barrier" value="bus_trap" icon="barrier_bus_trap" shield="barrier_bus_trap_shield"/>
+					<case tag="barrier" value="planter" icon="barrier_planter" shield="barrier_planter_shield"/>
+					<case tag="barrier" value="spikes" icon="barrier_spikes" shield="barrier_spikes_shield"/>
+					<case tag="barrier" value="wedge" icon="barrier_wedge" shield="barrier_wedge_shield"/>
+					<case tag="barrier" value="sump_buster" icon="barrier_sump_buster" shield="barrier_sump_buster_shield"/>
 					<case tag="barrier" value="chain" icon="barrier_chain" shield="barrier_chain_shield"/>
 					<case tag="barrier" value="gate" icon="barrier_gate" shield="barrier_gate_shield"/>
 					<case tag="barrier" value="sliding_gate" icon="barrier_gate" shield="barrier_gate_shield"/>
 					<case tag="barrier" value="kissing_gate" icon="barrier_kissing_gate" shield="barrier_kissing_gate_shield"/>
 					<case tag="barrier" value="lift_gate" icon="barrier_lift_gate" shield="barrier_lift_gate_shield"/>
 					<case tag="barrier" value="hampshire_gate" icon="barrier_hampshire_gate" shield="barrier_hampshire_gate_shield"/>
+					<case tag="barrier" value="tank_trap" icon="barrier_tank_trap" shield="barrier_tank_trap_shield"/>
 					<case tag="barrier" value="sally_port" icon="barrier_sally_port" shield="barrier_sally_port_shield"/>
 					<case tag="barrier" value="swing_gate" icon="barrier_swing_gate" shield="barrier_swing_gate_shield"/>
+					<case tag="barrier" value="barrier_board" icon="barrier_barrier_board" shield="barrier_barrier_board_shield"/>
+					<case tag="barrier" value="tyres" icon="barrier_tyres" shield="barrier_tyres_shield"/>
 					<case tag="barrier" value="toll_booth" icon="toll_booth" shield="barrier_toll_booth_shield"/>
 					<case tag="military" value="checkpoint" icon="military_checkpoint" shield="military_checkpoint_shield"/>
 					<apply_if showAccess="true">
@@ -6306,6 +6349,7 @@
 					<case tag="barrier" value="lift_gate" icon="barrier_lift_gate" shield="barrier_lift_gate_shield"/>
 					<case tag="barrier" value="hampshire_gate" icon="barrier_hampshire_gate" shield="barrier_hampshire_gate_shield"/>
 					<case tag="barrier" value="swing_gate" icon="barrier_swing_gate" shield="barrier_swing_gate_shield"/>
+					<case tag="barrier" value="tank_trap" icon="barrier_tank_trap" shield="barrier_tank_trap_shield"/>
 					<case tag="barrier" value="chain" icon="barrier_chain" shield="barrier_chain_shield"/>
 					<case tag="barrier" value="turnstile" icon="barrier_turnstile" shield="barrier_turnstile_shield" iconOrder="128"/>
 					<case tag="barrier" value="full-height_turnstile" icon="barrier_turnstile" shield="barrier_turnstile_shield" iconOrder="128"/>
@@ -6313,10 +6357,14 @@
 					<case tag="barrier" value="sally_port" icon="barrier_sally_port" shield="barrier_sally_port_shield"/>
 					<case tag="barrier" value="block" icon="barrier_block" shield="barrier_block_shield"/>
 					<case tag="barrier" value="debris" icon="barrier_colored_debris" shield="barrier_debris_shield"/>
+					<case tag="barrier" value="bar" icon="barrier_bar" shield="barrier_bar_shield"/>
+					<case tag="barrier" value="coupure" icon="barrier_coupure" shield="barrier_coupure_shield"/>
 					<case tag="barrier" value="log" icon="barrier_colored_log" shield="barrier_log_shield"/>
 					<case tag="barrier" value="jersey_barrier" icon="barrier_colored_jersey_barrier" shield="barrier_jersey_barrier_shield"/>
 					<case tag="barrier" value="horse_stile" icon="barrier_colored_horse_stile" shield="barrier_horse_stile_shield"/>
 					<case tag="barrier" value="kissing_gate" icon="barrier_kissing_gate" shield="barrier_kissing_gate_shield"/>
+					<case tag="barrier" value="barrier_board" icon="barrier_barrier_board" shield="barrier_barrier_board_shield"/>
+					<case tag="barrier" value="tyres" icon="barrier_tyres" shield="barrier_tyres_shield"/>
 					<apply_if minzoom="18" showAccess="true" additional="access=private" icon_2="access_private_red_overlay"/>
 					<apply_if minzoom="18" showAccess="true" additional="access=no" icon_2="access_private_red_overlay"/>
 					<apply_if minzoom="18" showAccess="true" additional="access=permit" icon_2="access_permit_overlay"/>
@@ -6702,6 +6750,8 @@
 						<apply_if additional="access=customers" icon="amenity_parking_private" iconOrder="181"/>
 						<apply_if additional="access=private" icon=""/>
 						<apply_if additional="access=no" icon=""/>
+						<apply_if minzoom="18" additional="access=private" icon="amenity_parking_private"/>
+						<apply_if minzoom="18" additional="access=no" icon="amenity_parking_private"/>
 					</case>
 					<case minzoom="16" tag="amenity" value="bicycle_parking" icon="bicycle_parking" iconVisibleSize="32" iconOrder="152">
 						<case additional="bicycle_parking=stands" icon="bicycle_parking_stands"/>
@@ -7168,7 +7218,7 @@
 					<case tag="leisure" value="sports_centre" icon="leisure_sports_centre"/>
 					<case tag="leisure" value="sports_hall" icon="sports_hall"/>
 					<case minzoom="17" tag="leisure" value="fitness_centre" icon="fitness_centre"/>
-					<apply shield="green_round_shield" iconVisibleSize="32" iconOrder="166"/>
+					<apply shield="green_round_shield" iconVisibleSize="20" iconOrder="134"/>
 					<apply_if nightMode="true" shield="green_round_night_shield"/>
 				</switch>
 				<switch minzoom="17">
@@ -7364,6 +7414,7 @@
 					<case minzoom="16" tag="amenity" value="ranger_station" icon="ranger_station"/>
 					<case minzoom="16" tag="amenity" value="waste_transfer_station" icon="waste_transfer_station"/>
 					<case minzoom="16" tag="amenity" value="mobile_library" icon="mobile_library"/>
+					<case minzoom="16" tag="amenity" value="toy_library" icon="toy_library"/>
 					<case minzoom="17" tag="amenity" value="lavoir" icon="lavoir"/>
 					<case minzoom="17" tag="man_made" value="dovecote" icon="dovecote"/>
 					<apply_if nightMode="true" shield="gray_round_night_shield"/>
@@ -7850,6 +7901,7 @@
 			<!-- Barriers -->
 			<switch>
 				<switch iconOrder="138">
+				<!-- Passable barriers -->
 					<switch>
 						<case minzoom="16" tag="barrier" value="gate" icon="barrier_gate" shield="barrier_gate_shield"/>
 						<case minzoom="16" tag="barrier" value="yes" icon="barrier_gate" shield="barrier_gate_shield"/>
@@ -7858,6 +7910,10 @@
 						<case minzoom="16" tag="barrier" value="swing_gate" icon="barrier_swing_gate" shield="barrier_swing_gate_shield"/>
 						<case minzoom="16" tag="barrier" value="bump_gate" icon="barrier_bump_gate" shield="barrier_bump_gate_shield"/>
 						<case minzoom="16" tag="barrier" value="bus_trap" icon="barrier_bus_trap" shield="barrier_bus_trap_shield"/>
+						<case minzoom="16" tag="barrier" value="planter" icon="barrier_planter" shield="barrier_planter_shield"/>
+						<case minzoom="16" tag="barrier" value="spikes" icon="barrier_spikes" shield="barrier_spikes_shield"/>
+						<case minzoom="16" tag="barrier" value="wedge" icon="barrier_wedge" shield="barrier_wedge_shield"/>
+						<case minzoom="16" tag="barrier" value="sump_buster" icon="barrier_sump_buster" shield="barrier_sump_buster_shield"/>
 						<case minzoom="18" tag="barrier" value="cattle_grid" icon="barrier_cattle_grid" shield="barrier_cattle_grid_shield"/>
 						<case minzoom="16" tag="barrier" value="chain" icon="barrier_chain" shield="barrier_chain_shield"/>
 						<case minzoom="16" tag="barrier" value="height_restrictor" icon="barrier_height_restrictor" shield="barrier_height_restrictor_shield"/>
@@ -7871,6 +7927,10 @@
 						<case minzoom="16" tag="barrier" value="sliding_gate" icon="barrier_gate" shield="barrier_gate_shield"/>
 						<case minzoom="16" tag="barrier" value="horse_stile" icon="barrier_colored_horse_stile" shield="barrier_horse_stile_shield"/>
 						<case minzoom="16" tag="barrier" value="entrance" icon="barrier_entrance" shield="barrier_entrance_shield"/>
+						<case minzoom="16" tag="barrier" value="wicket_gate" icon="barrier_entrance" shield="barrier_entrance_shield"/>
+						<case minzoom="16" tag="barrier" value="coupure" icon="barrier_coupure" shield="barrier_coupure_shield"/>
+						<case minzoom="16" tag="barrier" value="tyres" icon="barrier_tyres" shield="barrier_tyres_shield"/>
+						<case minzoom="16" tag="barrier" value="tank_trap" icon="barrier_tank_trap" shield="barrier_tank_trap_shield"/>
 						<apply_if moreDetailed="true" minzoom="16" maxzoom="16" icon="barrier_small_black_2" shield="" iconVisibleSize="0">
 							<apply_if nightMode="true" icon="barrier_small_white_2"/>
 						</apply_if>
@@ -7920,6 +7980,12 @@
 					</case>
 					<case tag="barrier" value="debris">
 						<apply_if minzoom="16" icon="barrier_colored_debris" shield="barrier_debris_shield"/>
+					</case>
+					<case tag="barrier" value="bar">
+						<apply_if minzoom="16" icon="barrier_bar" shield="barrier_bar_shield"/>
+					</case>
+					<case tag="barrier" value="barrier_board">
+						<apply_if minzoom="16" icon="barrier_barrier_board" shield="barrier_barrier_board_shield"/>
 					</case>
 					<case tag="barrier" value="log">
 						<apply_if minzoom="16" icon="barrier_colored_log" shield="barrier_log_shield"/>
@@ -8796,18 +8862,12 @@
 					</switch>
 				</apply>
 				<apply showAccess="true">
-					<switch>
-						<case additional="access=private"/>
-						<case additional="access=no"/>
-						<apply color="$parkingPrivateColor"/>
-					</switch>
 					<switch minzoom="16">
-						<case additional="access=permissive" color="$parkingPrivateColor">
-							<case color_2="$accessPermissiveColor"/>
+						<case additional="access=private" color_2="$accessPrivateColor"/>
+						<case additional="access=permissive" color_2="$accessPermissiveColor">
 							<apply_if nightMode="true" color_2="$accessPermissiveColorNight2"/>
 						</case>
-						<case additional="access=customers" color="$parkingCustomersColor">
-							<case color_2="$accessCustomersColor" strokeWidth_2="3" pathEffect_2="8_6" cap_2="ROUND"/>
+						<case additional="access=customers" color="$parkingCustomersColor" color_2="$accessCustomersColor" strokeWidth_2="3" pathEffect_2="8_6" cap_2="ROUND">
 							<apply_if nightMode="true" color_2="$accessCustomersColorNight2"/>
 						</case>
 						<apply strokeWidth_2="3" pathEffect_2="1_6" cap_2="ROUND"/>
@@ -9310,9 +9370,37 @@
 				<case minzoom="19" strokeWidth_2="40:40"/>
 			</apply>
 		</switch>
-		<case moreDetailed="true" minzoom="17" tag="building:part" value="" color="$null" strokeWidth_2="0.5" color_2="#999999">
+		<switch coloredBuildings="true" minzoom="17">
+			<switch>
+				<case tag="building:part" value="garage"/>
+				<case tag="building:part" value="industrial"/>
+				<case tag="building:part" value="shed"/>
+				<apply color="$buildingIndustrialColor"/>
+			</switch>
+			<case tag="building:part" value="roof" color="$buildingRoofColor"/>
+			<case tag="building:part" value="office" color="$buildingOfficeColor"/>
+			<case tag="building:part" value="residential" color="$buildingResidentialColor"/>
+			<case tag="building:part" value="hospital" color="$buildingHospitalColor"/>
+			<case tag="building:part" value="construction" color="$buildingConstructionColor"/>
+			<switch>
+				<case tag="building:part" value="civic"/>
+				<case tag="building:part" value="school"/>
+				<case tag="building:part" value="kindergarten"/>
+				<case tag="building:part" value="university"/>
+				<apply color="$buildingEducationalColor"/>
+			</switch>
+			<switch>
+				<case tag="building:part" value="commercial"/>
+				<case tag="building:part" value="retail"/>
+				<apply color="$buildingCommercialColor"/>
+			</switch>
+			<case tag="building:part" value="church" color="$churchColor"/>
+			<apply strokeWidth_2="0.5" color_2="#999999"/>
 			<apply_if nightMode="true" color_2="#808080"/>
-		</case>
+			<case tag="building:part" value="" color="$null" strokeWidth_2="0.5" color_2="#999999">
+				<apply_if nightMode="true" color_2="#808080"/>
+			</case>
+		</switch>
 		<switch>
 			<case minzoom="16" tag="railway" value="traverser"/>
 			<case minzoom="16" tag="railway" value="turntable"/>
@@ -9516,15 +9604,19 @@
 			</apply_if>
 		</switch>
 
-		<case minzoom="15" tag="highway" value="footway" additional="footway=crossing" strokeWidth="0.1" color_5="$footwayColor"> <!-- this code is here because we do not want surfaces,surfaceGrade and access on crossings -->
-			<case maxzoom="16" strokeWidth_5="0.5"/>
-			<case maxzoom="17" strokeWidth_5="1"/>
-			<case minzoom="18" color="#ffffff" color__1="#77555555">
-				<case maxzoom="18" strokeWidth="4:4" pathEffect="2_2" strokeWidth__1="4:4"/>
-				<case minzoom="19" strokeWidth="6:6" pathEffect="3_3" strokeWidth__1="6:6"/>
+		<switch>
+			<case minzoom="15" tag="highway" value="footway" additional="footway=crossing" strokeWidth="0.1" color_5="$footwayColor"/> <!-- this code is here because we do not want surfaces,surfaceGrade and access on crossings -->
+			<case minzoom="15" tag="highway" value="path" additional="path=crossing" strokeWidth="0.1" color_5="$pathColor"/>
+ 			<case baseAppMode="bicycle" minzoom="15" tag="highway" value="cycleway" additional="cycleway=crossing" strokeWidth="0.1" color_5="$cyclewayColor"/>
+ 			<case baseAppMode="bicycle" minzoom="15" tag="highway" value="path" additional="cycleway=crossing" strokeWidth="0.1" color_5="$cyclewayColor"/>
+   			<apply_if maxzoom="16" strokeWidth_5="0.5"/>
+			<apply_if minzoom="17" maxzoom="17" strokeWidth_5="1"/>
+			<apply_if minzoom="18" color="#ffffff" color__1="#77555555">
+				<apply_if maxzoom="18" strokeWidth="4:4" pathEffect="2_2" strokeWidth__1="4:4"/>
+				<apply_if minzoom="19" strokeWidth="6:6" pathEffect="3_3" strokeWidth__1="6:6"/>
 				<apply_if nightMode="true" color="#aaaaaa" color__1="#33ffffff"/>
-			</case>
-		</case>
+			</apply_if>
+		</switch>
 
 		<switch>
 			<switch minzoom="14">
@@ -10035,7 +10127,7 @@
 							<case maxzoom="16" strokeWidth_0="3.5:5"/>
 							<case maxzoom="17" strokeWidth_0="5:6"/>
 							<case maxzoom="18" strokeWidth_0="7:8.5"/>
-							<case maxzoom="19" strokeWidth_0="8:12"/>
+							<case minzoom="19" strokeWidth_0="8:12"/>
 							<apply_if nightMode="true" color_0="#ffffff"/>
 							<apply_if hideOverground="true" color_0="$hideOvergroundBridgeUnderlayColor"/>
 						</apply_if>
@@ -10182,19 +10274,34 @@
 							</case>
 						</case>
 						<apply>
-							<switch alpineHiking="true">
-								<case additional="sac_scale=mountain_hiking" color_5="$sacScaleColorT2" pathEffect_5=""/>
-								<case additional="sac_scale=demanding_mountain_hiking" color_5="$sacScaleColorT3" pathEffect_5="10_3"/>
-								<case additional="sac_scale=alpine_hiking" color_5="$sacScaleColorT4" pathEffect_5=""/>
-								<case additional="sac_scale=demanding_alpine_hiking" color_5="$sacScaleColorT5" pathEffect_5="10_3"/>
-								<case additional="sac_scale=difficult_alpine_hiking" color_5="$sacScaleColorT6" pathEffect_5="3_3"/>
-							</switch>
-							<switch alpineHiking="false">
+							<case alpineHiking="true">
+								<switch alpineHikingScaleScheme="sacScale">
+									<case additional="sac_scale=mountain_hiking" color_5="$sacScaleColorT2" pathEffect_5=""/>
+									<case additional="sac_scale=demanding_mountain_hiking" color_5="$sacScaleColorT3" pathEffect_5="10_3"/>
+									<case additional="sac_scale=alpine_hiking" color_5="$sacScaleColorT4" pathEffect_5=""/>
+									<case additional="sac_scale=demanding_alpine_hiking" color_5="$sacScaleColorT5" pathEffect_5="10_3"/>
+									<case additional="sac_scale=difficult_alpine_hiking" color_5="$sacScaleColorT6" pathEffect_5="3_3"/>
+								</switch>
 								<case additional="sac_scale=demanding_mountain_hiking" pathEffect_5="2_6"/>
 								<case additional="sac_scale=alpine_hiking" pathEffect_5="2_6"/>
 								<case additional="sac_scale=demanding_alpine_hiking" pathEffect_5="2_6"/>
 								<case additional="sac_scale=difficult_alpine_hiking" pathEffect_5="2_6"/>
-							</switch>
+								<switch alpineHikingScaleScheme="caiScale">
+									<case additional="cai_scale=t" color_5="$caiScaleColor" pathEffect_5=""/>
+									<case additional="cai_scale=e" color_5="$caiScaleColor" pathEffect_5="13_2"/>
+									<case additional="cai_scale=ee" color_5="$caiScaleColor" pathEffect_5="6_2"/>
+									<switch>
+										<case additional="cai_scale=eea"/>
+										<case additional="cai_scale=eea:f"/>
+										<case additional="cai_scale=eea:pd"/>
+										<case additional="cai_scale=eea:d"/>
+										<case additional="cai_scale=eea:md"/>
+										<case additional="cai_scale=eea:e"/>
+										<case additional="cai_scale=eai"/>
+										<apply color_5="$caiScaleColor" pathEffect_5="2_2"/>
+									</switch>
+								</switch>
+							</case>
 						</apply>
 					</switch>
 
@@ -10629,6 +10736,8 @@
 			<case tag="barrier" value="turnstile"/>
 			<case tag="barrier" value="full-height_turnstile"/>
 			<case tag="barrier" value="kent_carriage_gap"/>
+			<case tag="barrier" value="tyres"/>
+			<case tag="barrier" value="tank_trap"/>
 			<case tag="man_made" value="snow_fence"/>
 			<case tag="whitewater" value="rapid" pathEffect="2_2"/>
 			<apply>
