@@ -1784,6 +1784,7 @@
 			<poi_type name="fire_water_pond" tag="emergency" value="fire_water_pond" poi_additional_category="water_source"/>
 			<poi_type name="grit_bin" tag="amenity" value="grit_bin"/>
 			<poi_type name="emergency_access_point" tag="highway" value="emergency_access_point"/>
+			<poi_type name="assembly_point" tag="emergency" value="assembly_point"/>
 			<poi_type name="suction_point" tag="emergency" value="suction_point" poi_additional_category="water_source"/>
 			<poi_type name="water_tank" tag="emergency" value="water_tank"/>
 			<poi_reference name="defibrillator"/>
@@ -4725,6 +4726,7 @@
 					<poi_additional name="shelter_type_rock_shelter" tag="shelter_type" value="rock_shelter"/>
 					<poi_additional name="shelter_type_sun_shelter" tag="shelter_type" value="sun_shelter"/>
 					<poi_additional name="shelter_type_field_shelter" tag="shelter_type" value="field_shelter"/>
+					<poi_additional name="osmand_not_pt_shelter_yes" tag="osmand_not_pt_shelter" value="yes"/>
 				</poi_additional_category>
 				<poi_additional_category name="fireplace">
 					<poi_additional name="fireplace_yes" tag="fireplace" value="yes"/>

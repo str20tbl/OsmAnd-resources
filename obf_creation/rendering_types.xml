@@ -207,7 +207,7 @@
 	<type tag="bicycle" value="permissive" minzoom="13" additional="true" poi="false"/>
 	<type tag="bicycle" value="destination" minzoom="13" additional="true" poi="false"/>
 	<type tag="bicycle" value="designated" minzoom="12" additional="true" poi="false"/>
-	<entity_convert pattern="tag_transform" from_tag="foot" from_value="use_sidepath" to_tag1="foot" to_value1="no"/>
+	<entity_convert pattern="tag_transform" from_tag="foot" from_value="use_sidepath" if_not_tag1="sidewalk:left" if_not_value1="yes" if_not_tag2="sidewalk:right" if_not_value2="yes" to_tag1="foot" to_value1="no"/>
 	<entity_convert pattern="tag_transform" from_tag="bicycle" from_value="official" to_tag1="bicycle" to_value1="designated" routing="no"/>
 	<entity_convert pattern="tag_transform" from_tag="bicycle" from_value="use_sidepath" to_tag1="bicycle" to_value1="no"/>
 	<entity_convert pattern="tag_transform" from_tag="horse" from_value="use_sidepath" to_tag1="horse" to_value1="no"/>
@@ -1050,6 +1050,8 @@
 	<entity_convert pattern="tag_transform" from_tag="amenity" from_value="shelter" if_tag1="historic" if_not_tag1="historic" if_not_value1="yes" to_tag1="shelter" to_value1="yes"/>
 	<entity_convert pattern="tag_transform" from_tag="amenity" from_value="shelter" if_tag1="shop" to_tag1="shelter" to_value1="yes"/>
 	<entity_convert pattern="tag_transform" from_tag="amenity" from_value="shelter" if_tag1="leisure" to_tag1="shelter" to_value1="yes"/>
+	<type tag="osmand_not_pt_shelter" value="yes" additional="true" minzoom="13"/>
+	<entity_convert pattern="tag_transform" from_tag="amenity" from_value="shelter" if_not_tag1="shelter_type" if_not_value1="public_transport" to_tag1="amenity" to_value1="shelter" to_tag2="osmand_not_pt_shelter" to_value2="yes"/>
 	<type tag="amenity" value="watering_place" minzoom="14"/>
 
 	<type tag="ele_limit" value="200" minzoom="9" additional="true" notosm="true"/>
@@ -2600,6 +2602,10 @@
 		<type tag="sidewalk" value="no" minzoom="15" additional="true"/>
 		<entity_convert pattern="tag_transform" from_tag="sidewalk" from_value="none" to_tag1="sidewalk" to_value1="no"/>
 		<entity_convert pattern="tag_transform" from_tag="sidewalk" from_value="separate" to_tag1="sidewalk" to_value1="no"/>
+		<entity_convert pattern="tag_transform" from_tag="sidewalk:left" from_value="yes" if_tag1="foot" if_value1="use_sidepath" to_tag1="sidewalk" to_value1="yes" map="no"/>
+		<entity_convert pattern="tag_transform" from_tag="sidewalk:right" from_value="yes" if_tag1="foot" if_value1="use_sidepath" to_tag1="sidewalk" to_value1="yes" map="no"/>
+		<entity_convert pattern="tag_transform" from_tag="sidewalk:left" from_value="separate" if_tag1="foot" if_value1="use_sidepath" map="no"/>
+		<entity_convert pattern="tag_transform" from_tag="sidewalk:right" from_value="separate" if_tag1="foot" if_value1="use_sidepath" map="no"/>
 	</category>
 
 	<category name="surface">
@@ -5283,6 +5289,7 @@
 		<entity_convert pattern="tag_transform" from_tag="emergency" from_value="defibrillator" if_tag1="leisure" to_tag1="defibrillator" to_value1="yes" map="no"/>
 		<entity_convert pattern="tag_transform" from_tag="emergency" from_value="defibrillator" if_tag1="tourism" to_tag1="defibrillator" to_value1="yes" map="no"/>
 		<type tag="emergency" value="rescue_box" minzoom="15" />
+		<type tag="emergency" value="assembly_point" minzoom="13" />
 		<type tag="emergency" value="mountain_rescue" minzoom="13" />
 		<type tag="emergency" value="lifeguard" minzoom="13" />
 		<type tag="lifeguard" value="base" minzoom="15" additional="true"/>
@@ -5544,6 +5551,7 @@
 		<type tag="historic" value="wayside_shrine" minzoom="15" />
 		<type tag="historic" value="wreck" minzoom="15" />
 		<type tag="historic" value="quarry" minzoom="12" />
+		<entity_convert pattern="tag_transform" from_tag="historic" from_value="quarry" if_not_tag1="natural" if_not_value1="cliff" if_tag1="natural" poi="no"/>
 		<type tag="geological" value="palaeontological_site" minzoom="14" order="75" />
 		<entity_convert pattern="tag_transform" from_tag="historic:period" from_value="iron_age" to_tag1="historic:period" to_value1="iron-age" map="no"/>
 		<entity_convert pattern="tag_transform" from_tag="historic:period" from_value="protodynastic_egypt" to_tag1="historic:period" to_value1="early_dynastic_period" map="no"/>
